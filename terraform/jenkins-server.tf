@@ -21,7 +21,7 @@ resource "google_compute_instance" "jenkins_server" {
     access_config {}
   }
 
-  metadata_startup_script = file("./jenkins-server.sh")
+  metadata_startup_script = file("./scripts/jenkins-server.sh")
   tags = ["jenkins"]
 
   labels = {

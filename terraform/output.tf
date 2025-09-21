@@ -9,9 +9,9 @@ output "sonar_server_ip" {
 }
 
 output "nexus_server_ip" {
-  description = "External IP address of the Nexus server"
-  value       = google_compute_instance.nexus-server.network_interface[0].access_config[0].nat_ip
+  value = google_compute_instance.nexus_server.network_interface[0].access_config[0].nat_ip
 }
+
 
 # GKE cluster info
 output "gke_cluster_name" {

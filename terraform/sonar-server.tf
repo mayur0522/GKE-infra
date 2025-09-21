@@ -21,7 +21,7 @@ resource "google_compute_instance" "sonar-server" {
     }
   }
 
-  metadata_startup_script = file("./sonar-server.sh")
+  metadata_startup_script = file("./scripts/sonar-server.sh")
 
   tags = ["sonar-server"]
 
