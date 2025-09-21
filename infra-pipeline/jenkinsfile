@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        PROJECT_ID = 'gke-springboot-472605'
+        REGION     = 'asia-south1'
+        ZONE       = 'asia-south1-b'
+    }
+
+    stages {
+        stage('Checkout Infra Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-org/GKE-Springboot.git'
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform plan -out=tfplan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                dir('terraform') {
+                    input message: "Apply Terraform changes?"
+                    sh 'terraform apply -auto-approve tfplan'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Infrastructure provisioned successfully!"
+        }
+        failure {
+            echo "❌ Terraform pipeline failed!"
+        }
+    }
+}
