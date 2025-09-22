@@ -1,12 +1,12 @@
 #!/bin/bash
 # Startup script for Jenkins server on GCP (Ubuntu 22.04)
-# Installs Jenkins, Docker, Maven, gcloud SDK, and kubectl
+# Installs Jenkins, Docker, Maven, gcloud SDK, kubectl, and GKE auth plugin
 
 ################################################################################################
 # 1. System Update & Java (required for Jenkins)
 ################################################################################################
 sudo apt update -y
-sudo apt install -y openjdk-17-jre unzip curl wget gnupg ca-certificates apt-transport-https software-properties-common
+sudo apt install -y openjdk-17-jre unzip curl wget gnupg ca-certificates apt-transport-https software-properties-common lsb-release
 
 ################################################################################################
 # 2. Jenkins Installation
@@ -50,13 +50,16 @@ sudo chmod 666 /var/run/docker.sock
 sudo apt install -y maven
 
 ################################################################################################
-# 5. Google Cloud SDK & kubectl
+# 5. Google Cloud SDK, kubectl, and GKE Auth Plugin
 ################################################################################################
 # Install gcloud SDK
-curl -sSL https://sdk.cloud.google.com | bash
+sudo apt-get install -y apt-transport-https ca-certificates gnupg
 
-# Ensure kubectl is installed
-sudo apt install -y kubectl
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.gpg > /dev/null
+
+sudo apt update -y
+sudo apt install -y google-cloud-sdk kubectl google-cloud-sdk-gke-gcloud-auth-plugin
 
 ################################################################################################
 # 6. Enable and Restart Jenkins Service
@@ -64,4 +67,4 @@ sudo apt install -y kubectl
 sudo systemctl enable jenkins
 sudo systemctl restart jenkins
 
-echo "✅ Jenkins, Docker, Maven, gcloud SDK, and kubectl installed successfully!"
+echo "✅ Jenkins, Docker, Maven, gcloud SDK, kubectl, and GKE auth plugin installed successfully!"
