@@ -1,6 +1,6 @@
 #!/bin/bash
 # Startup script for Jenkins server on GCP (Ubuntu 22.04)
-# Installs Jenkins, Docker, Maven, gcloud SDK, kubectl, and GKE auth plugin
+# Installs Jenkins, Docker, Maven, gcloud SDK, kubectl, GKE auth plugin, and Trivy
 
 ################################################################################################
 # 1. System Update & Java (required for Jenkins)
@@ -69,9 +69,21 @@ echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" | sudo tee -a /etc/environment
 echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" | sudo tee -a /home/jenkins/.bashrc
 
 ################################################################################################
-# 6. Enable and Restart Jenkins Service
+# 6. Trivy Installation (Vulnerability Scanner)
+################################################################################################
+sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | \
+  sudo tee /etc/apt/sources.list.d/trivy.list
+
+sudo apt-get update -y
+sudo apt-get install -y trivy
+
+################################################################################################
+# 7. Enable and Restart Jenkins Service
 ################################################################################################
 sudo systemctl enable jenkins
 sudo systemctl restart jenkins
 
-echo "✅ Jenkins, Docker, Maven, gcloud SDK, kubectl, and GKE auth plugin installed successfully!"
+echo "✅ Jenkins, Docker, Maven, gcloud SDK, kubectl, GKE auth plugin, and Trivy installed successfully!"
